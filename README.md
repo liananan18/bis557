@@ -7,14 +7,6 @@
 
 Lian's BIS557 class assignment answers, write-ups and other materials
 
----
-title: "HW1-LinearModel_GradientDescent"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{An Example Vignette}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
