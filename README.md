@@ -1,6 +1,6 @@
 # bis557
 <!-- badges: start -->
-[![Coveralls test coverage](https://coveralls.io/repos/github/brian-d1018/bis557/badge.svg)](https://coveralls.io/r/brian-d1018/bis557?branch=master)
+[![Coveralls test coverage](https://coveralls.io/repos/github/liananan18/bis557/badge.svg)](https://coveralls.io/r/liananan18/bis557?branch=master)
 [![Travis build status](https://travis-ci.com/liananan18/bis557.svg?branch=master)](https://travis-ci.com/liananan18/bis557)
 <!-- badges: end -->
 
