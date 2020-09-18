@@ -6,5 +6,8 @@
   "dist": "xenial",
   "cache": {
     "packages": true
-  }
+  },
+  "after_success": [
+    "Rscript -e 'covr::coveralls()'"
+  ]
 }
