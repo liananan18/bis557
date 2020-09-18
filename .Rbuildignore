@@ -1,15 +1,6 @@
-{
-  "language": "r",
-  "os": [
-    "osx"
-  ],
-  "dist": "xenial",
-  "cache": {
-    "packages": true
-  },
-  "after_success": [
-    "Rscript -e 'covr::coveralls()'"
-  ]
-}
+^.*\.Rproj$
+^\.Rproj\.user$
+^README\.Rmd$
+^data-raw$
+^LICENSE\.md$
 ^\.travis\.yml$
-^codecov\.yml$
