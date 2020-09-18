@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.com/liananan18/bis557.svg?branch=master)](https://travis-ci.com/liananan18/bis557)
-[![Codecov test coverage](https://codecov.io/gh/liananan18/bis557/branch/master/graph/badge.svg)](https://codecov.io/gh/liananan18/bis557?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/liananan18/bis557/badge.svg?branch=master)](https://coveralls.io/github/liananan18/bis557?branch=master)
 <!-- badges: end -->
 
 This BIS557 package contains class assignment answers, write-ups and other materials by Lian.
