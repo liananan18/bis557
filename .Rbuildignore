@@ -11,3 +11,4 @@
     "Rscript -e 'covr::coveralls()'"
   ]
 }
+^\.travis\.yml$
