@@ -1,4 +1,3 @@
-library(roxygen2)
 #' A simple dataset used for linear regression
 #'
 #' A dataset with three variables (y, x1, and x2) and two rows of observations
