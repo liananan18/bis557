@@ -7,13 +7,6 @@
 Lian's BIS557 class assignment answers, write-ups and other materials
 
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
-
 <br><br>
 
 ## Dataset
