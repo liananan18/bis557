@@ -1,12 +1,11 @@
 # bis557
-BIS557 class assignment answers, write-ups and other materials
 
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.com/liananan18/bis557.svg?branch=master)](https://travis-ci.com/liananan18/bis557)
 [![Coveralls test coverage](https://coveralls.io/repos/github/liananan18/bis557/badge.svg)](https://coveralls.io/r/liananan18/bis557?branch=master)
 <!-- badges: end -->
 
-The goal of {bis557} is to show the work that Brian did in the BIS 557 Fall 2020 class. These include packages, functions, and data for common statistical algorithms.
+This BIS557 package contains class assignment answers, write-ups and other materials by Lian.
 
 ## Installation
 
