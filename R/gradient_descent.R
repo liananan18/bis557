@@ -32,11 +32,11 @@ gradient_descent <- function(y,X,epsilon=0.0001,lrate=2, iters=1e5){
   
 }
 
-print.gradient_descent<-function(x, ...){
+#print.gradient_descent<-function(x, ...){
   #cat("\nCoefficients:\n")
-  print.default(x$coefficients)
+  #print.default(x$coefficients)
   
-}
+#}
 
 
 
