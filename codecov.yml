@@ -1,4 +1,4 @@
-repo_token: pA5WU7Gjz3mhGr7FHdjKYMPYhC6kbKIjg
+
 comment: false
 gem 'coveralls', require: false
 
