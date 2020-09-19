@@ -33,7 +33,7 @@ linear_model <- function(form,dataframe,contrasts=NULL){
 
   #Give
   names(ret$coefficients)<-colnames(IND)
-  class(ret)<-"linear_model"
+  #class(ret)<-"linear_model"
   return(ret)
 
 }
