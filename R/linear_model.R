@@ -7,6 +7,7 @@
 #' @examples
 #' data(iris)
 #' linear_model(Sepal.Length ~ ., iris,contrasts = list(Species = "contr.sum"))
+#' @import stats
 #' @export
 linear_model <- function(form,dataframe,contrasts=NULL){
   data_na_free<-model.frame(form,dataframe)#only drop rows of na in the chosen variables
