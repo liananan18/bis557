@@ -9,4 +9,5 @@ r_packages:
 after_success:
   - Rscript -e 'library(covr); codecov()'
   - Rscript -e 'covr::coveralls()'
-  ! grep -R "WARNING" "${RCHECK_DIR}/00check.log"
+  
+script: ! grep -R "WARNING" "${RCHECK_DIR}/00check.log" 
