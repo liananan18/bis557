@@ -33,15 +33,15 @@ linear_model <- function(form,dataframe,contrasts=NULL){
 
   #Give
   names(ret$coefficients)<-colnames(IND)
-  class(ret)<-"linear_model"
+  #class(ret)<-"linear_model"
   return(ret)
 
 }
 
 
-print.linear_model<-function(x, ...){
-  cat("\nCoefficients:\n")
-  print.default(x$coefficients)
+#print.linear_model<-function(x, ...){
+  #cat("\nCoefficients:\n")
+  #print.default(x$coefficients)
 
-}
+#}
 

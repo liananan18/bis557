@@ -27,16 +27,16 @@ gradient_descent <- function(y,X,epsilon=0.0001,lrate=2, iters=1e5){
   }
   ret<-list("coefficients" = as.vector(t(theta)))
   names(ret$coefficients)<-colnames(X)
-  class(ret)<-"gradient_descent"
+  #class(ret)<-"gradient_descent"
   return(ret)
   
 }
 
-print.gradient_descent<-function(x, ...){
-  cat("\nCoefficients:\n")
-  print.default(x$coefficients)
+#print.gradient_descent<-function(x, ...){
+  #cat("\nCoefficients:\n")
+  #print.default(x$coefficients)
   
-}
+#}
 
 
 
