@@ -40,7 +40,7 @@ linear_model <- function(form,dataframe,contrasts=NULL){
 
 
 print.linear_model<-function(x, ...){
-  cat("\nCoefficients:\n")
+  #cat("\nCoefficients:\n")
   print.default(x$coefficients)
 
 }
