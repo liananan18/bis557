@@ -7,9 +7,11 @@
 linear_model(form, dataframe, contrasts = NULL)
 }
 \arguments{
-\item{formula}{linear regression formula
-dataframe  data frame
-contrasts  optional; list of constrasts for factor variables}
+\item{dataframe}{data frame}
+
+\item{contrasts}{optional; list of constrasts for factor variables}
+
+\item{formula}{linear regression formula}
 }
 \description{
 This function will run a linear model and return the coefficients

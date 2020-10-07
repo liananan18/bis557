@@ -7,11 +7,15 @@
 gradient_descent(y, X, epsilon = 1e-04, lrate = 2, iters = 1e+05)
 }
 \arguments{
-\item{y}{vector of the dependent variable
-X         data frame or matrix of all the independent variables (all the elements should be numetric)
-epsilon   optional; default as 0.0001, difference to determine the convergence
-eta       learning rate
-iters     maximum number of iterations}
+\item{y}{vector of the dependent variable}
+
+\item{X}{data frame or matrix of all the independent variables (all the elements should be numetric)}
+
+\item{epsilon}{optional; default as 0.0001, difference to determine the convergence}
+
+\item{iters}{maximum number of iterations}
+
+\item{eta}{learning rate}
 }
 \description{
 This function will apply gradient descent to a dataset and return the coefficients

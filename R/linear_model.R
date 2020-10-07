@@ -1,9 +1,8 @@
 #' @title Run a linear model
 #' @description This function will run a linear model and return the coefficients
-#' @param
-#' formula    linear regression formula
-#' dataframe  data frame
-#' contrasts  optional; list of constrasts for factor variables
+#' @param formula    linear regression formula
+#' @param dataframe  data frame
+#' @param contrasts  optional; list of constrasts for factor variables
 #' @examples
 #' data(iris)
 #' linear_model(Sepal.Length ~ ., iris,contrasts = list(Species = "contr.sum"))

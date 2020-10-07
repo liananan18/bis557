@@ -1,11 +1,10 @@
 #' @title Use gradient descent to run a linear model
 #' @description This function will apply gradient descent to a dataset and return the coefficients
-#' @param
-#' y         vector of the dependent variable 
-#' X         data frame or matrix of all the independent variables (all the elements should be numetric)
-#' epsilon   optional; default as 0.0001, difference to determine the convergence
-#' eta       learning rate
-#' iters     maximum number of iterations 
+#' @param y         vector of the dependent variable 
+#' @param X         data frame or matrix of all the independent variables (all the elements should be numetric)
+#' @param epsilon   optional; default as 0.0001, difference to determine the convergence
+#' @param eta       learning rate
+#' @param iters     maximum number of iterations 
 #' @examples
 #' data(iris)
 #' gradient_descent(iris[,1], iris[,c(2,3,4)])
