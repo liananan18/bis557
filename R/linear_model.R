@@ -1,6 +1,6 @@
 #' @title Run a linear model
 #' @description This function will run a linear model and return the coefficients
-#' @param formula    linear regression formula
+#' @param form       linear regression formula
 #' @param dataframe  data frame
 #' @param contrasts  optional; list of constrasts for factor variables
 #' @examples

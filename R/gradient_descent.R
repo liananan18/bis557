@@ -3,7 +3,7 @@
 #' @param y         vector of the dependent variable 
 #' @param X         data frame or matrix of all the independent variables (all the elements should be numetric)
 #' @param epsilon   optional; default as 0.0001, difference to determine the convergence
-#' @param eta       learning rate
+#' @param lrate     learning rate
 #' @param iters     maximum number of iterations 
 #' @examples
 #' data(iris)

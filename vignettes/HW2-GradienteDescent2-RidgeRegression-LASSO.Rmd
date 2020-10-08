@@ -1,0 +1,198 @@
+---
+title: "HW2-GradienteDescent2-RidgeRegression-LASSO"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{HW2}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+<br><br>
+
+```{r setup}
+library(bis557)
+```
+
+
+1. 
+CASL 2.11 Exercises problem number 5.      
+Consider the simple regression model with only a scalar x and intercept:$y = \beta_0 + \beta_1 x$      
+Using the explicit formula for the inverse of a 2-by-2 matrix, write down the least squares estimators for $\hat{\beta_0}$ and $\hat{\beta_1}$.     
+
+We know the formula for least square estimator matrix is:     
+$$\hat\beta = (X^TX)^{-1}X^TY$$
+We can express x, y and $\beta$ in matrix form:
+
+$y = 
+\left[\begin{array}{ccc}
+y_1 \\    
+y_2 \\    
+\vdots\\    
+y_n
+\end{array}\right],$
+\ \ 
+$x=
+\left[\begin{array}{ccc}
+1 & x_1 \\    
+1 & x_2 \\    
+\vdots&\vdots\\    
+1 & x_n
+\end{array}\right],$
+\ \ 
+$b = 
+\left[\begin{array}{ccc}
+\beta_0 \\    
+\beta_1  \\    
+\end{array}\right]$
+
+Calculate $(X^TX)^{-1}$ using sum of squares equations.
+
+
+$(X^TX)^{-1} = \frac{1}{n\sum_{i = 1}^{n}x_i^2 - (n\bar x)^2}
+\left[\begin{array}{ccc}
+\sum_{i = 1}^{n}x_i^2 & -n\bar x\\
+-n\bar x & n\\
+\end{array}\right]$
+
+
+\begin{equation} \label{eq1}
+\begin{split}
+\hat\beta 
+& = (X^TX)^{-1}X^TY\\
+& = \frac{1}{n\sum_{i = 1}^{n}x_i^2 - (n\bar x)^2}
+\left[\begin{array}{ccc}
+\sum_{i = 1}^{n}x_i^2 & -n\bar x\\
+-n\bar x & n\\
+\end{array}\right]
+
+\left[\begin{array}{ccc}
+\sum_{i = 1}^{n}y_i\\
+\sum_{i = 1}^{n}x_iy_i
+\end{array}\right]\\
+
+& = \frac{1}{n\sum_{i = 1}^{n}x_i^2 - (n\bar x)^2}
+\left[\begin{array}{ccc}
+\sum_{i = 1}^{n}x_i^2 & -n\bar x\\
+-n\bar x & n\\
+\end{array}\right]
+
+\left[\begin{array}{ccc}
+n\bar y\\
+\sum_{i = 1}^{n}x_iy_i
+\end{array}\right]\\
+
+
+& = \frac{1}{n\sum_{i = 1}^{n}x_i^2 - (n\bar x)^2}
+\left[\begin{array}{ccc}
+y_1(\sum_{i=1}^{n}x_i^2 - nx_1\bar x) + 
+y_2(\sum_{i=1}^{n}x_i^2 - nx_2\bar x) +
+...
++ y_n(\sum_{i=1}^{n}x_i^2 - nx_n\bar x)\\
+n(x_1y_1+...+x_ny_n) - n\bar x(y_1+...+y_n)
+\end{array}\right]
+\end{split}
+\end{equation}
+
+
+
+From the above calculation, we get the coefficients: 
+$$\beta_0 = \frac{\sum_{i = 1}^{n} y_i \sum_{i = 1}^{n}x^2_i - n\bar x \sum_{i = 1}^{n}y_i}{n\sum_{i = 1}^{n}x^2_i - (n\bar x)^2}$$ 
+and 
+$$\beta_1 = \frac{n\sum_{i = 1}^{n} x_iy_i -\sum_{i = 1}^{n} x_i \sum_{i = 1}^{n}y_i}{n\sum_{i = 1}^{n}x^2_i - (n\bar x)^2}$$
+
+
+
+--------------------------------------------------------------
+
+2. 
+```{r}
+mod <- lm(Sepal.Length ~ ., iris[,-5])
+ise <- mean(mod$residuals^2)
+ose <- gradient_descent_oos(iris[,1], iris[,c(2,3,4)])$Out_Of_Sample_MSE
+ise < ose
+
+paste("In sample error is:",ise)
+paste("Out sample error is:", ose)
+```
+Compare to the OLS model, the out of sample error is usually greater than the in sample error. 
+
+
+--------------------------------------------------------------
+
+3. 
+```{r}
+data("iris")
+  
+# create a colinear variable
+iris$Petal.Length2 <- iris$Petal.Length * 2 + 4
+  
+fit_ridge_regression <- ridge_regression(Sepal.Length  ~ ., iris[,-5], 0.01)
+  
+fit_lm <- lm(Sepal.Length  ~ ., iris[,-5])
+
+fit_ridge_regression
+fit_lm
+```
+When lambda is 0 and no colinear variables, the ridge regression has very close result as OLS. When there lambda increases, the difference in coefficients increases. Also, when there is colinear variables, OLS only calculate the coefficients of the non coliear variables, while Ridge regression can calculate coefficients for all varables. The variables which are not colineared with other variables have very similar correlations in OLS and ridge regression. 
+
+--------------------------------------------------------------
+
+4. 
+```{r}
+data(iris)
+fit_optimize_lambda <- optimize_lambda(Sepal.Length  ~ ., iris[,-5])
+
+fit_optimize_lambda$plot
+fit_optimize_lambda$lambda
+```
+My method of optimizing the ridge parameter works. We can observe that the error decreases and then increases when lambda increases. The optimal lambda for this iris dataset is 0.06.   
+
+--------------------------------------------------------------
+
+5. Consider the LASSO penalty
+$$
+\frac{1}{2n} ||Y - X \beta||_2^2 + \lambda ||\beta||_1.
+$$
+Show that if $|X_j^TY| \leq n \lambda$, then $\widehat \beta^{\text{LASSO}}$ must be zero.
+
+
+Let $L$ be the LASSO penalty. 
+
+\begin{equation} \label{eq2}
+\begin{split}
+L 
+&= \frac{1}{2n} (Y - X \beta)^T(Y - X \beta) + \lambda | \beta | \\
+&= \frac{1}{2n} (Y^TY - 2X^TY \beta + \beta^T X^TX \beta) + \lambda | \beta |\\
+&= \frac{1}{2n}(- 2X^TY \beta + \sum \beta^2) + \sum \lambda | \beta |
+\end{split}
+\end{equation}
+
+
+When $\beta_j >0$
+Take a dirivative: 
+$$ l = \frac{1}{n}(X^T_j X_j \beta_j-X^T_j Y) + \lambda = 0$$
+
+$$ \hat \beta^\text{LASSO}_j = \frac{X^T_j Y- n \lambda}{X^T_j X_j} > 0$$
+$$X^T_j Y- n \lambda > 0$$
+Given that $|X^T_j Y| \le n \lambda$, we have$- n \lambda \le X^T_j Y\le n \lambda$, and then ${-2n \lambda} \le X^T_j Y- n \lambda \le 0$. It contradicts with the above. 
+      
+      
+When $\beta_j < 0$, 
+Take a dirivative: 
+$$ l = \frac{1}{n}(X^T_j X_j \beta_j-X^T_j Y) - \lambda = 0$$
+
+$$ \hat \beta^\text{LASSO}_j = \frac{- X^T_j Y + n \lambda}{X^T_j X_j} < 0$$
+$$ X^T_j Y + n \lambda< 0$$
+
+
+Given that $|X^T_j Y| \le n \lambda$, we have$- n \lambda \le X^T_j Y\le n \lambda$, and then $0 \le X^T_j Y+ n \lambda \le 2n \lambda$. It contradicts with the above. 
+
+Therefore, base on the two contradictions shown above, we can conclude when $|X^T_j Y| \le n \lambda$, $\hat\beta_j^\text{LASSO}$ must be zero. 
+
