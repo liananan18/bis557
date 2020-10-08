@@ -56,3 +56,46 @@ library(bis557)
 data(iris)
 gradient_descent(iris[,1], iris[,2:4])
 ```
+
+--------------------------------------------------------------
+
+### Gradient Descent Out of Sample Error
+Calculate the out of sample error
+```{r}
+mod <- lm(Sepal.Length ~ ., iris[,-5])
+ise <- mean(mod$residuals^2)
+ose <- gradient_descent_oos(iris[,1], iris[,c(2,3,4)])$Out_Of_Sample_MSE
+ise < ose
+
+paste("In sample error is:",ise)
+paste("Out sample error is:", ose)
+```
+Compare to the OLS model, the out of sample error is usually greater than the in sample error. 
+
+
+### Ridge Regression
+A ridge regression which takes in a lambda and can deal with colinear variables
+```{r}
+data("iris")
+  
+# create a colinear variable
+iris$Petal.Length2 <- iris$Petal.Length * 2 + 4
+  
+fit_ridge_regression <- ridge_regression(Sepal.Length  ~ ., iris[,-5], 0.01)
+  
+fit_lm <- lm(Sepal.Length  ~ ., iris[,-5])
+
+fit_ridge_regression
+fit_lm
+```
+
+### Optimize Lambda in Ridge Regression
+Pick an optimal lambda for a redge regression, which has the smallest error
+```{r}
+data(iris)
+fit_optimize_lambda <- optimize_lambda(Sepal.Length  ~ ., iris[,-5])
+
+fit_optimize_lambda$plot
+fit_optimize_lambda$lambda
+```
+
