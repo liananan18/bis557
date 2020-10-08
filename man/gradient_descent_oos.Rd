@@ -14,9 +14,9 @@ gradient_descent_oos(y, X, epsilon = 1e-04, lrate = 2, iters = 1e+05)
 
 \item{epsilon}{optional; default as 0.0001, difference to determine the convergence}
 
-\item{iters}{maximum number of iterations}
+\item{lrate}{learning rate}
 
-\item{eta}{learning rate}
+\item{iters}{maximum number of iterations}
 }
 \description{
 This function will apply gradient descent
