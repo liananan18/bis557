@@ -1,0 +1,94 @@
+---
+title: "HW3-GLM-LogitClassification"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{HW3}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+<br><br>
+
+```{r setup}
+library(bis557)
+library(palmerpenguins)
+```
+
+
+1. CASL 5.8 Exercise number 2.
+Generate a matrix X and probabilities $p$ such that the linear Hessian $(X^tX)$ is well-conditioned but the logistic variation is not. 
+
+As we learned from the lecture and text book, when the probabilities become very close to zero or one, the logistic variation would be ill-conditioned. When p or (1-p) is too small, $X^tDX$ becomes very small and makes the inverse matrix too big and is bad for convergence. 
+Given: 
+$$H(l) = X^t \cdot D \cdot X $$ 
+$$D_{i,i} = p_i \cdot (1 - p_i)$$ 
+```{r}
+# example 
+
+beta = matrix(rep(0,5),5)
+
+beta_old <- beta
+p <- runif(10000,0,0.0000001)
+Y <- rbinom(10000,1,p)
+X <- matrix(rnorm(50000),10000)
+
+D <- matrix(rep(0,10000^2),10000)
+diag(D) <- p*(1-p)
+
+#X 
+XtDX <- t(X)%*%D%*%X # small
+head(XtDX)
+XtX <- t(X)%*%X
+head(XtX)
+
+inv_H_v <- -solve(XtDX) # absolute value is too big and is bad for convergence
+inv_H_v
+inv_H <- -solve(XtX)
+inv_H #Small and is good for convergence
+
+
+```
+
+2. Describe and implement a first-order solution for the GLM maximum likelihood problem using only gradient information, avoiding the Hessian matrix. Include both a constant step size along with an adaptive one. You may use a standard adaptive update Momentum, Nesterov, AdaGrad, Adam, or your own. Make sure to explain your approach and compare it's performance with a constant step size.
+
+Compare to the constant step size, the adaptive update is faster in converging because it helps accelerate gradient vectors in the right rirection. 
+When chosing a bad step size, the constant step size may not work but the adaptive update may work (accep a greater range of step sizes). 
+```{r}
+
+set.seed(10)
+# Momentum Algorithm
+X <- cbind(rep(1,100),matrix(rnorm(1000),200))
+##poisson silulation
+beta <- c(1, 0.1, 0.2, 0.1, 0.3, -1)
+y <- rpois(nrow(X), exp(X%*%beta))
+data <- as.data.frame(cbind(y,X[,-1]))
+
+glm(y~.,data,family = poisson)
+
+# with adaptive step size update
+gradient_descent_mmt(y,X,family = poisson(link = "log"),update = T, lrate)
+# constant step size
+gradient_descent_mmt(y,X,family = poisson(link = "log"),update = F, lrate)
+
+```
+
+3. Describe and implement a classification model generalizing logistic regression to accommodate more than two classes. 
+
+Change y into rows of binary (3 classes = 3 rows) classes and then apply a regular logistic model to each line of data. This method gives coefficients as a matrix, make predictions, and calculates am error rate. 
+```{r}
+data("penguins")
+X = penguins[-which(is.na(penguins[,c(3,4,5,6)])),c(3,4,5,6)]
+X = cbind(1,scale(X))
+y = (unlist(penguins[-which(is.na(penguins[,c(3,4,5,6)])),1]))
+# y = (penguins$species=="Adelie")
+data = cbind(X,y)
+logit_multiclass(X,y)
+```
+
