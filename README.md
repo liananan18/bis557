@@ -99,6 +99,7 @@ fit_optimize_lambda$plot
 fit_optimize_lambda$lambda
 ```
 
+--------------------------------------------------------------
 
 ### GLM with Gradient Descent and Momentum Adaptive Update for Step Sizes
 Used frist-order gradient descent with momentum adaptive update. 
