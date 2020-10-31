@@ -1,6 +1,6 @@
 Package: bis557
 Title: Package Containing Work for BIS557
-Version: 0.2.0
+Version: 0.3.0
 Authors@R:
     person(given = "Lian",
            family = "Chen",
