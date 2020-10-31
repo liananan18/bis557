@@ -11,10 +11,15 @@
 #' @param epsilon   error tolerence
 #' @param change    rate of change of momentum algorithem
 #' @examples
-#' X = matrix(rnorm(100),20)
-#' X = cbind(1,scale(X))
-#' y = rbinom(20,3,0.3)
-#' logit_multiclass(X,y)
+#' set.seed(10)
+#' # Momentum Algorithm
+#' X <- cbind(rep(1,100),matrix(rnorm(1000),200))
+#' ##poisson simulation
+#' beta <- c(1, 0.1, 0.2, 0.1, 0.3, -1)
+#' y <- rpois(nrow(X), exp(X%*%beta))
+#' # with adaptive step size update
+#' gradient_descent_mmt(y,X,family = poisson(link = "log"),update = TRUE)
+
 #' @export
 
 gradient_descent_mmt <-function(y,X,family,update=TRUE,lrate = 0.001,iters = 1e5,epsilon = 1e-8, change =0.9){
