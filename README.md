@@ -124,10 +124,10 @@ gradient_descent_mmt(y,X,family = poisson(link = "log"),update = F)
 Change y into rows of binary (3 classes = 3 rows) classes and then apply a regular logistic model to each line of data. 
 This method gives coefficients as a matrix, makes predictions, and calculates am error rate. 
 ```{r}
-data("penguins")
-X = penguins[-which(is.na(penguins[,c(3,4,5,6)])),c(3,4,5,6)]
+set.seed(123)
+X = rbind(matrix(rnorm(1000),200),matrix(rnorm(1000,5,3),200),matrix(rnorm(1000,10,1),200))
+X = scale(X)
 X = cbind(1,scale(X))
-y = (unlist(penguins[-which(is.na(penguins[,c(3,4,5,6)])),1]))
-data = cbind(X,y)
+y = c(rep(1,200),rep(2,200),rep(3,200))
 logit_multiclass(X,y)
 ```
