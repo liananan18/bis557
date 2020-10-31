@@ -38,10 +38,8 @@ This function implements a first-order solution for the GLM maximum likelihood p
 Include both a constant step size along with an adaptive one (using momentum algorithm).
 }
 \examples{
-data("penguins")
-X = penguins[-which(is.na(penguins[,c(3,4,5,6)])),c(3,4,5,6)]
+X = matrix(rnorm(100),20)
 X = cbind(1,scale(X))
-y = (unlist(penguins[-which(is.na(penguins[,c(3,4,5,6)])),1]))
-data = cbind(X,y)
+y = rbinom(20,3,0.3)
 logit_multiclass(X,y)
 }

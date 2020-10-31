@@ -19,12 +19,9 @@ logit_multiclass(X, y, iters = 25, epsilon = 1e-10)
 This function implement a logistic model which can make prediction of more than 2 classes
 }
 \examples{
-# Momentum Algorithm
-X <- cbind(rep(1,100),matrix(rnorm(1000),200))
-##poisson silulation
-beta <- c(1, 0.1, 0.2, 0.1, 0.3, -1)
-y <- rpois(nrow(X), exp(X\%*\%beta))
-data <- as.data.frame(cbind(y,X[,-1]))
-# with adaptive step size update
-gradient_descent_mmt(y,X,family = poisson(link = "log"),update = T, lrate)
+X = rbind(matrix(rnorm(1000),200),matrix(rnorm(1000,5,3),200),matrix(rnorm(1000,10,1),200))
+X = scale(X)
+X = cbind(1,scale(X))
+y = c(rep(1,200),rep(2,200),rep(3,200))
+logit_multiclass(X,y)
 }

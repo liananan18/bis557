@@ -11,11 +11,9 @@
 #' @param epsilon   error tolerence
 #' @param change    rate of change of momentum algorithem
 #' @examples
-#' data("penguins")
-#' X = penguins[-which(is.na(penguins[,c(3,4,5,6)])),c(3,4,5,6)]
+#' X = matrix(rnorm(100),20)
 #' X = cbind(1,scale(X))
-#' y = (unlist(penguins[-which(is.na(penguins[,c(3,4,5,6)])),1]))
-#' data = cbind(X,y)
+#' y = rbinom(20,3,0.3)
 #' logit_multiclass(X,y)
 #' @export
 

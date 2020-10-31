@@ -7,7 +7,6 @@
 #' @examples
 #' data(iris)
 #' ridge_regression(Sepal.Length ~ ., iris[,-5], 0.01)
-#' @import stats
 #' @export
 ridge_regression <- function(form,dataframe,lambda=0){
   
