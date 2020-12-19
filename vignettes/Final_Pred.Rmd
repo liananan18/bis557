@@ -1,0 +1,207 @@
+---
+title: "Final_Beijng_Housing_Prediction"
+author: "Lian Chen"
+date: "12/18/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+set.seed(123)
+```
+
+```{r message=FALSE, warning=FALSE, tidy=TRUE, echo=FALSE}
+library(knitr)
+library(latex2exp)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(Hmisc)
+library(gridExtra)
+library(grid)
+library(lattice)
+library(car)
+library(scales)
+library(randomForest)
+# This makes sure the code is wrapped to fit when it creates a pdf
+opts_chunk$set(tidy.opts=list(width.cutoff=60))   
+
+housing_beijing <- read.csv('new.csv',header = TRUE)              
+```
+
+### Introduction:
+
+Real Estate investment has always been a heated topic. The housing price has been increasing rapidly in major cities in China in the past several years, which makes the housing market a good investment choice. Each house/apartment is in a different condition and can be listed at various prices. How do we know that the price listed is a fair value? How do we know if this is a good investment?              
+
+I will take Beijing's real estate market as an example and construct a predictive model for the housing price, which will help to make an investment decision. I will use the historical data as the training da We can compare the real price with this model's prediction to see if the house is over-valued (may not be a good investment) or under-valued (maybe a good investment).              
+               
+The dataset I use is downloaded from Kaggle, https://www.kaggle.com/ruiqurm/lianjia, which is from a leading franchise real estate medium company in China. The dataset includes housing market information from 2010 to 2018.                   
+I glanced through all the notebooks on Kaggle, people used various models. Some people compared the error rates among different strategies, but only use one model at a time. I would like to try something different, which I want to combine two models to increase the accuracy. After data cleansing, I will first fit a linear model, which captures the linear predictive information. Then I will use a Random Forest model, which is less sensitive to over-fitting than a decision tree model, to predict the residuals from the linear model. The residuals have linear information removed.                  
+In order to evaluate if the combined model is better than using each algorithm along, I will randomly select a group of data from the historical dataset to train a model and test on a randomly selected new dataset (of more recent data). Repeat this process several times and calculate a mean. This method is similar to k-folds but accommodates the purpose of using historical data to predict a future price. For convenience of this project, I will train one model for each method and calculate out of sample MSE for each.                   
+                                                              
+Some information about the dataset:           
+What I will predict is the unite price which unit is RMB(Chinese Currency)/$m^2$, the unit for square(later renamed as space) is $m^2$.             
+This dataset has 318851 rows of observations with 26 different variables.                  
+
+
+
+### Pre-test                  
+
+I believe housing price is a time sensitive data. To test this scenario, I use Anova to check if there is difference in price among different years of listed on the market.               
+       
+
+```{r message=FALSE, warning=FALSE, tidy=TRUE}
+
+# Check the number of missing data
+apply(housing_beijing,2,function(x) sum(is.na(x)))
+
+# Change date format and exclude 6 data points with very old listing year
+housing_year <- housing_beijing %>% 
+  mutate(listyear = lubridate::year(tradeTime)) %>%
+  filter(2011 < listyear & listyear <= 2018) %>% 
+  mutate(listyear = as.factor(listyear))
+
+# Use anova to test if there is significant difference in price across years
+fit_year <- lm(price~listyear, data = housing_year)
+anova(fit_year)
+```
+
+The result shows that there is a difference in the price among different years of “tradeTime".   
+
+
+### data cleansing                                                                
+
+In order to get better knowledge of the data, I make histogram for the unit price and space.                    
+```{r message=FALSE, warning=FALSE, tidy=TRUE,}
+
+par(mfrow=c(1,2))
+
+hist(housing_beijing$price,
+     breaks=50,
+     xlab="Price",
+     main="Histogram of Unit Price")
+
+hist(housing_beijing$square,
+        breaks=50,
+        xlab="Space",
+        main="Boxplot for Space")
+
+```                                                        
+
+
+I choose 13 variables out of all 26 variables based on their relevance to unite price and how common the information can be collected. Use the recent 2017 data as the training data set, and predict the price for 2018.                  
+```{r message=FALSE, warning=FALSE, tidy=TRUE }
+Housing <- housing_year %>% 
+  filter(listyear %in% c(2017,2018)) %>%
+  select(price, listyear, square, livingRoom, drawingRoom, bathRoom, kitchen, buildingStructure, 
+         constructionTime, renovationCondition, elevator, subway, district) %>%  
+  rename(space=square,  bedroom = livingRoom, livingroom=drawingRoom, bathroom=bathRoom) %>% 
+  # Rename the variables to make them easier to understand
+  # change categorical vectors type to factor format
+  mutate(constructionTime = as.numeric(as.character(constructionTime)),
+         kitchen = as.factor(kitchen),
+         district = as.factor(district),
+         renovationCondition = as.factor(renovationCondition),
+         buildingStructure = as.factor(buildingStructure),
+         elevator = as.factor(elevator),
+         subway = as.factor(subway),
+         price=as.numeric(price)) %>%  
+  # Use construction time to calculate how long the house has been used
+  mutate(year_used = 2017-constructionTime,
+         major_district = as.factor(ifelse(district!=1 & district!=7 & district!=8 & district!=10, 2, district)),
+         logspace=log10(space)) %>%    
+  # Since the space is skewed, calculate the log of space for further analysis
+  select(-c(constructionTime)) %>% 
+  # Base on the above distribution and other variable analysis I exclude a very few amount of outliers
+  filter(price>9000, space<700,  bedroom %in% seq(1,7,1), livingroom %in% seq(0,4,1),
+         bathroom %in% seq(0,5,1), kitchen %in% c(0,1,2), buildingStructure %in% c(2,4,6))%>%     
+  drop_na() 
+
+# Choose some main districts of Beijing and combine the other smaller ones
+levels(Housing$major_district) <- c( "Dongcheng",  "Others", "Chaoyang", "Haidian",  "Xicheng")
+Housing$major_district <- relevel(Housing$major_district, ref = "Others")
+
+# rename the levels
+levels(Housing$buildingStructure) <- c("missing","unknow","mixed","brick and wood",
+                                            "brick and concrete","steel", "composite")
+levels(Housing$renovationCondition) <- c("missing", "other", "rough", "simplicity", "fine furnished")
+
+```
+
+
+#### split data into training and testing dataset 
+Try to use historical data (2017)to predict a future unit price (2018).              
+```{r message=FALSE, warning=FALSE, tidy=TRUE }
+
+train <- Housing[which(Housing$listyear==2017), ]
+test <- Housing[which(Housing$listyear==2018), ]
+
+```
+
+### modeling
+#### select the optimal list of variables in predicting the price
+
+linear model (including all 12 variables in the linear model)
+and two models combined                    
+```{r message=FALSE, warning=FALSE, tidy=TRUE}
+
+# set.seed(123)
+# selec_train <- sample(1:floor(nrow(train)*0.7))
+# selec_test <- sample(1:floor(nrow(test)*0.7))
+# 
+# train1 <- train[selec_train,]
+# test1 <- test[selec_test,]
+
+train1 <- train
+test1 <- test
+
+# Linear model
+lm_model <- lm(price ~  logspace + bedroom + livingroom + bathroom + kitchen + buildingStructure + renovationCondition + elevator + subway + year_used + major_district, data=train1)
+summary(lm_model)   # All variables seem to be significant. 
+
+# Random Forest model
+# rf_model <- randomForest(price ~ logspace + bedroom + livingroom + bathroom + kitchen + buildingStructure + renovationCondition  + elevator + subway + year_used + major_district, data=train1)
+
+# summary(rf_model)
+
+# Combind two
+train_pred <- predict(lm_model, newdata = train1)
+res <- train1$price-train_pred
+
+train_tree <- train1[,which(colnames(train1)!="price")]
+train_tree$res <- res
+
+tree_pred_res <- randomForest(res ~ logspace + bedroom + livingroom + bathroom + kitchen + buildingStructure + renovationCondition + elevator + subway + year_used + major_district, data=train_tree)
+
+
+pred_lm <- predict(lm_model, newdata = test)
+pred_res <- predict(tree_pred_res, newdata = test)
+pred_comb <- pred_lm + pred_res
+
+```
+Calculate the MSE                
+```{r}
+
+## for 2017 data
+mean((test$price - pred_lm)^2) # linear model
+mean((test$price - pred_comb)^2) # combined model
+
+```
+
+About 25% of the price is undervalued using this model, which indicates that if the predicted price is lower than the actual listing price in that year, it is more likely that the house is undervalued.           
+```{r}
+
+sum((test$price - pred_lm)>0)/length(pred_lm) 
+
+```
+
+
+### Conclusion and Discussion
+
+In conclusion, the method which first fits a linear model and then uses the random forest to fit the residual performs better than a linear model alone. The model is more likely to make an undervalued prediction than an overvalued prediction.                    
+
+I could use all previous years of data to build a model and include the list year as a variable, but it took a long time to use my laptop to compute the random forest algorithm.              
+
+To determine if this new method is better than another stand-alone method, I can also calculate the MSE of other algorithms and use other error measurements to confirm the result. Another limitation is that we do not have more recent data, which makes it uncertain if the model fits best for the recent trend, but we can perform further analysis once we collect new data. To slightly improve this model we can multiply the predicted value by a coefficient, which is the general percentage increase of the price of a selected year compared to the year that the model used. 
